@@ -216,7 +216,7 @@ int main(){
     vListInsertEnd(&taskList,&ListItem3);
     printList(&taskList);
 
-    printf("插入任务3：%s\n",task3->taskName);
+    printf("插入任务3：%s\n",task4->taskName);
     vListInsertEnd(&taskList,&ListItem3);
     printList(&taskList);
 
