@@ -20,9 +20,9 @@ StackType_t GreenLEDStack[LED_STACK_SIZE];
 StackType_t BlueLEDStack[LED_STACK_SIZE];
 
 // 任务控制块
-StaticTask_t RedLEDTCB;   // 使用StaticTask_t而不是TCB_t
-StaticTask_t GreenLEDTCB;
-StaticTask_t BlueLEDTCB;
+TCB_t RedLEDTCB;   // 使用StaticTask_t而不是TCB_t
+TCB_t GreenLEDTCB;
+TCB_t BlueLEDTCB;
 
 // 模拟LED状态的全局变量
 volatile uint8_t red_led_state = 0;
