@@ -28,14 +28,19 @@ StackType_t DataProcess2Stack[TASK_STACK_SIZE];
 StackType_t MonitorStack[TASK_STACK_SIZE];
 
 //任务控制块
-TCB_t DataProcess1TCB;
-TCB_t DataProcess2TCB;
-TCB_t MonitorTCB;
+StaticTask_t DataProcess1TCB;
+StaticTask_t DataProcess2TCB;
+StaticTask_t MonitorTCB;
 
 //任务参数
-TaskParams_t task1_params={1,300,"Datapro1"};
-TaskParams_t task2_params={2,600,"Datapro2"};
-TaskParams_t Monitor_params={3,1000,"Monitor"};
+// 修改1. static 确保数据在程序的整个生命周期中有效。
+// const 确保数据在初始化后无法被修改。
+// 这两者结合起来，不仅保证了数据的持久性，还提高了代码的安全性和稳定性。
+static const TaskParams_t task1_params={1,300,"Datapro1"};
+static const TaskParams_t task2_params={2,600,"Datapro2"};
+// 修改2.动态分配（如果使用heap）
+TaskParams_t *Monitor_params=pvPorMalloc(sizeof(TaskParams_t));
+*Monitor_params=(TaskParams_t){3,1000,"Monitor"};
 
 //全局变量缓冲区
 volatile uint32_t data_buffer[2]    =   {0,0};
@@ -48,7 +53,8 @@ uint32_t process_data(uint32_t input,uint32_t task_id){
 
 //延时函数
 void delay_ms(uint32_t ms){
-    for(uint32_t i=0;i<ms*1000;i++);
+    // for(uint32_t i=0;i<ms*1000;i++);
+    vTaskDelay(pdMS_TO_TICKS(ms));
 }
 
 void DataProcess_Task(void *pvParameters){
@@ -101,7 +107,7 @@ int main(){
         DataProcess_Task,       // 任务函数
         "DataProcess1",         // 任务名称
         TASK_STACK_SIZE,        // 任务堆栈大小
-        &task1_params,          // 任务参数
+        &task1_params,          // 任务参数 ← 这里就是 pvParameters
         DataProcess1Stack,      // 任务堆栈
         &DataProcess1TCB        // 任务控制块
     );
@@ -111,7 +117,7 @@ int main(){
         DataProcess_Task,       // 任务函数
         "DataProcess2",         // 任务名称
         TASK_STACK_SIZE,        // 任务堆栈大小
-        &task2_params,          // 任务参数
+        &task2_params,          // 任务参数 ← 这里就是 pvParameters
         DataProcess2Stack,      // 任务堆栈
         &DataProcess2TCB        // 任务控制块
     );
@@ -121,7 +127,7 @@ int main(){
         Monitor_Task,           // 任务函数
         "Monitor",              // 任务名称
         TASK_STACK_SIZE,        // 任务堆栈大小
-        &Monitor_params,        // 任务参数
+        &Monitor_params,        // 任务参数 ← 这里就是 pvParameters
         MonitorStack,           // 任务堆栈
         &MonitorTCB             // 任务控制块
     );

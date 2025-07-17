@@ -20,9 +20,9 @@ StackType_t GreenLEDStack[LED_STACK_SIZE];
 StackType_t BlueLEDStack[LED_STACK_SIZE];
 
 // 任务控制块
-TCB_t RedLEDTCB;   // 使用StaticTask_t而不是TCB_t
-TCB_t GreenLEDTCB;
-TCB_t BlueLEDTCB;
+StaticTask_t RedLEDTCB;   // 使用StaticTask_t而不是StackType_t
+StaticTask_t GreenLEDTCB;
+StaticTask_t BlueLEDTCB;
 
 // 模拟LED状态的全局变量
 volatile uint8_t red_led_state = 0;
@@ -32,7 +32,8 @@ volatile uint8_t blue_led_state = 0;
 // 延时函数
 void delay_ms(uint32_t ms) {
     // 简单的延时实现（实际项目中应使用vTaskDelay）
-    for(uint32_t i = 0; i < ms * 1000; i++);
+    // for(uint32_t i = 0; i < ms * 1000; i++);
+    vTaskDelay(pdMS_TO_TICKS(ms));
 }
 
 // 红色LED任务——快速闪烁（200ms间隔）
